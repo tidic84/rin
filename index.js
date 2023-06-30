@@ -1,26 +1,29 @@
 const Discord = require('discord.js');
+const Player = require('discord-player');
 const intents = new Discord.IntentsBitField(3276799);
 const client = new Discord.Client({ intents });
-const loadCommands = require('./loaders/loadCommands');
+const eventHandler = require('./handlers/eventHandler');
+
+const { SpotifyExtractor, SoundCloudExtractor } = require('@discord-player/extractor');
+
+client.player = new Player.Player(client, {
+    leaveOnEnd: true,
+    leaveOnEmpty: true,
+    initialVolume: 25,
+    ytdlOptions: {
+        filter: 'audioonly',
+        quality: 'highestaudio',
+        highWaterMark: 1 << 25
+    }
+})
+client.player.extractors.loadDefault();
+client.player.extractors.register(SpotifyExtractor, {});
+client.player.extractors.register(SoundCloudExtractor, {});
+
+client.say = require('./util/say');
 
 require('dotenv').config();
 
-client.on("ready", async () => {
-    console.log(`${client.user.tag} connected!`);
-}) 
-
-client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    if (interaction.commandName == 'ping') {
-        callback: async (client, interaction) => {
-            await interaction.deferReply();
-
-            const reply = await interaction.fetchReply();
-            const ping = reply.createdTimestamp - interaction.createdTimestamp - interaction.createdTimestamp;
-
-            interaction.editReply(`Latency: ${ping}ms | API Latency: ${client.ws.ping}ms`)
-        }
-    };
-})
+eventHandler(client);
 
 client.login(process.env.TOKEN);
