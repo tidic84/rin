@@ -1,25 +1,36 @@
-const path = require("path")
-const getAllFiles = require("../util/getAllFiles")
+const glob = require("glob");
 
-module.exports = (client) => {
-    const eventFolders = getAllFiles(path.join(__dirname, "..", "events"), true);
-    for (const eventFolder of eventFolders) {
-        const eventFiles = getAllFiles(eventFolder);
-        eventFiles.sort((a, b) => a>b);
-        console.log(eventFiles);
-        const eventName = eventFolder.replace(/\\/g, "/").split("/").pop();
+module.exports = function loadEvents(client) {
+    const eventFiles = glob.sync("./events/**/*.js");
 
-        console.log(`Loading ${eventName}`);
+    for (const file of eventFiles) {
 
-        if (eventName == "player") {
-            for(const eventFile of eventFiles) {console.log(eventFile)}
+        const event = require(`../${file}`);
+
+        let type = "client";
+        if (file.includes("player.")) type = "player";
+
+        if (!event.execute) {
+            throw new TypeError(`[ERROR]: execute function is required for events! (${file})`);
         }
-        client.on(eventName, async (arg) => {
-            for (const eventFile of eventFiles) {
-                console.log(`Running ${eventFile}`);
-                const eventFunction = require(eventFile);
-                eventFunction(client, arg);
-            }
-        })
+
+        if (!event.name) {
+            throw new TypeError(`[ERROR]: name is required for events! (${file})`);
+        }
+        if (type === "player") {
+            const { useMainPlayer } = require("discord-player");
+            const player = useMainPlayer();
+
+            player.events.on(event.name, event.execute.bind(null, client));
+        } else if (event.once) {
+            client.once(event.name, event.execute.bind(null, client));
+        } else {
+            client.on(event.name, event.execute.bind(null, client));
+        }
+        delete require.cache[require.resolve(`../${file}`)];
+
+        // debug
+        console.log(`Event Loaded ${type}: ${event.name}`);
     }
-}
+    console.log("[--- All events loaded! ---]")
+};

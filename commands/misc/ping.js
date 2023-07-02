@@ -1,12 +1,9 @@
 module.exports = {
-    name: 'ping',
-    description: 'Replies with the bot ping!',
-    callback: async (client, interaction) => {
-        await interaction.deferReply();
-        const reply = await interaction.fetchReply();
-        const ping = reply.createdTimestamp - interaction.createdTimestamp;
-        interaction.editReply(
-        `Pong! Client ${ping}ms | Websocket: ${client.ws.ping}ms`
-        );
+    name: "ping",
+    description: "Ping? Pong!",
+    category: "misc",
+    async execute(bot, interaction) {
+        await interaction.reply("Pinging...").catch(console.error);
+        return interaction.editReply(`💓: ${Math.round(bot.ws.ping)} ms\n⏱️: ${Date.now() - interaction.createdTimestamp} ms`);
     },
 };

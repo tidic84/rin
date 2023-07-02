@@ -1,29 +1,21 @@
-const Discord = require('discord.js');
-const Player = require('discord-player');
-const intents = new Discord.IntentsBitField(3276799);
-const client = new Discord.Client({ intents });
-const eventHandler = require('./handlers/eventHandler');
+require("dotenv").config();
 
-const { SpotifyExtractor, SoundCloudExtractor } = require('@discord-player/extractor');
+const { Client, Collection, GatewayIntentBits } = require("discord.js");
 
-client.player = new Player.Player(client, {
-    leaveOnEnd: true,
-    leaveOnEmpty: true,
-    initialVolume: 25,
-    ytdlOptions: {
-        filter: 'audioonly',
-        quality: 'highestaudio',
-        highWaterMark: 1 << 25
-    }
-})
-client.player.extractors.loadDefault();
-client.player.extractors.register(SpotifyExtractor, {});
-client.player.extractors.register(SoundCloudExtractor, {});
+const { Player } = require("discord-player");
 
-client.say = require('./util/say');
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+});
 
-require('dotenv').config();
+client.commands = new Collection();
+client.cooldowns = new Collection();
+client.say = require("./util/reply");
+client.colors = require("./util/colors");
 
-eventHandler(client);
+const player = Player.singleton(client);
+player.extractors.loadDefault();
+
+require("./handlers/eventHandler")(client);
 
 client.login(process.env.TOKEN);
