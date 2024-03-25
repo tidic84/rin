@@ -1,5 +1,5 @@
 module.exports = {
-    name: "ping",
+    name: "ping2",
     description: "Ping? Pong!",
     category: "misc",
     async execute(client, interaction) {

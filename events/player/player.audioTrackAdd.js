@@ -4,7 +4,7 @@ module.exports = {
     name: "audioTrackAdd",
     execute(client, queue, track) {
         const embed = new EmbedBuilder()
-            .setAuthor({ name: `Track queued - Position ${queue.node.getTrackPosition(track) + 1}` })
+            .setAuthor({ name: `Track queued` })
             .setTitle(`${track.title}`)
             .setColor(client.colors.purple)
             .setURL(`${track.url}`)
