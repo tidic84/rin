@@ -50,7 +50,7 @@ module.exports = {
                 metadata: interaction.channel,
                 },
             });
-            return interaction.deferReply();
+            return interaction.reply({ephemeral: true, content: `Playing ${searchResult.tracks[0].title}`});
         } catch (e) {
             console.log(e)
             return client.say.error(client, interaction, `Something went wrong: ${e.message}`);
