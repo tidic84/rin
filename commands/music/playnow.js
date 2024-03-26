@@ -9,8 +9,8 @@ const {
 } = require('discord.js');
 
 module.exports = {
-    name: 'play',
-    description: 'Play music!',
+    name: 'playnow',
+    description: 'Add the track on top of the queue.',
     category: 'music',
     options: [
         {
@@ -23,10 +23,8 @@ module.exports = {
     async execute(client, interaction) {
     
         const query = interaction.options.getString("music", true);
-    
         const player = useMainPlayer();
         const queue = useQueue(interaction.guild.id);
-    
         const channel = interaction.member?.voice?.channel;
     
         if (!channel) return client.say.wrong(client, interaction, "You have to join a voice channel first.");
@@ -45,11 +43,7 @@ module.exports = {
         return client.say.wrong(client, interaction, `No track was found for ${query}!`);
     
         try {
-            await player.play(channel, searchResult, {
-                nodeOptions: {
-                metadata: interaction.channel,
-                },
-            });
+            await queue.insertTrack(searchResult.tracks[0], 0);
             return interaction.deferReply();
         } catch (e) {
             console.log(e)

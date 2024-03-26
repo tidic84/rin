@@ -29,19 +29,18 @@ module.exports = {
         const tracks = queue.tracks.toArray().slice(start, end);
 
         const embed = new EmbedBuilder()
-            .setColor(client.colors.blue)
+            .setTitle("Queue")
+            .setColor(client.colors.purple)
             .setDescription(
                 `${tracks
                 .map(
                     (track, i) =>
-                    `${start + ++i} - [${track.title}](${track.url}) ~ [${track.requestedBy.toString()}]`
+                    `${start + ++i} - [${track.title}](${track.url}) [${track.duration}] ~ ${track.requestedBy.toString()}`
                 )
                 .join("\n")}`
             )
             .setFooter({
-                text: `Page ${page} of ${maxPages} | track ${start + 1} to ${
-                end > queue.size ? `${queue.size}` : `${end}`
-                } of ${queue.size}`,
+                text: `Page ${page} of ${maxPages} | track ${start + 1} of ${queue.size}  |  Estimated time: ${queue.durationFormatted}`,
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
             });
 
