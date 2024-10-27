@@ -1,4 +1,4 @@
-const {useQueue, useMainPlayer} = require('discord-player');
+const { useQueue, useMainPlayer } = require('discord-player');
 const { EmbedBuilder } = require('discord.js');
 
 const {
@@ -21,14 +21,14 @@ module.exports = {
         },
     ],
     async execute(client, interaction) {
-    
+
         const query = interaction.options.getString("music", true);
-    
+
         const player = useMainPlayer();
         const queue = useQueue(interaction.guild.id);
-    
+
         const channel = interaction.member?.voice?.channel;
-    
+
         if (!channel) return client.say.wrong(client, interaction, "You have to join a voice channel first.");
         if (queue && queue.channel.id !== channel.id) return client.say.wrong(client, interaction, "I'm already playing in a different voice channel!");
         if (!channel.viewable) return client.say.wrong(client, interaction, "I need `View Channel` permission.");
@@ -36,21 +36,21 @@ module.exports = {
         if (channel.full) return client.say.wrong(client, interaction, "Can't join, the voice channel is full.");
         if (interaction.member.voice.deaf) return client.say.wrong(client, interaction, "You cannot run this command while deafened.");
         if (interaction.guild.members.me?.voice?.mute) return client.say.wrong(client, interaction, "Please unmute me before playing.");
-    
+
         const searchResult = await player
-        .search(query, { requestedBy: interaction.user })
-        .catch(() => null);
-    
+            .search(query, { requestedBy: interaction.user })
+            .catch(() => null);
+
         if (!searchResult?.hasTracks())
-        return client.say.wrong(client, interaction, `No track was found for ${query}!`);
-    
+            return client.say.wrong(client, interaction, `No track was found for ${query}!`);
+
         try {
             await player.play(channel, searchResult, {
                 nodeOptions: {
-                metadata: interaction.channel,
+                    metadata: interaction.channel,
                 },
             });
-            return interaction.reply({ephemeral: true, content: `Playing ${searchResult.tracks[0].title}`});
+            return interaction.reply({ ephemeral: true, content: `Playing ${searchResult.tracks[0].title}` });
         } catch (e) {
             console.log(e)
             return client.say.error(client, interaction, `Something went wrong: ${e.message}`);
