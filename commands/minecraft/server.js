@@ -1,4 +1,6 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+const { exec } = require('child_process');
+const wol = require('wakeonlan')
 
 module.exports = {
     name: "server",
@@ -18,9 +20,27 @@ module.exports = {
     ],
     async execute(client, interaction) {
         if (interaction.options.getSubcommand() == "start") {
-            interaction.reply("Start");
+            interaction.reply("Server started !");
+            wol(process.env.SERVER_MAC).then(() => {
+                console.log('wol sent!')
+            })
         } else if (interaction.options.getSubcommand() == "stop") {
-            interaction.reply("Stop");
+            interaction.reply("Server stopped !");
+
+            const serverAddress = process.env.SERVER_ID;
+            const command = 'sudo shutdown now';
+
+            exec(`ssh ${serverAddress} "${command}"`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Erreur : ${error.message}`);
+                    return;
+                }
+                if (stderr) {
+                    console.error(`Erreur stderr : ${stderr}`);
+                    return;
+                }
+                console.log(`Sortie : ${stdout}`);
+            });
         }
     },
 };
