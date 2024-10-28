@@ -1,7 +1,7 @@
 const { Events, ActivityType } = require("discord.js");
 const { exec } = require('child_process');
 let serverState = false;
-let previousServerState = null;
+let previousServerState = false;
 
 module.exports = {
     name: Events.ClientReady,
@@ -19,7 +19,7 @@ module.exports = {
                 }
 
                 if (previousServerState !== null && previousServerState !== serverState) {
-                    console.log(serverState ? 'Le serveur Minecraft est en ligne!' : 'Le serveur Minecraft est hors ligne!');
+                    console.log(serverState ? 'Le serveur Minecraft est en ligne!' : 'Le serveur Minecraft est hors ligne!')
                     const message = serverState ? 'Le serveur Minecraft est en ligne!' : 'Le serveur Minecraft est hors ligne!';
                     channel.send(message);
                 }
