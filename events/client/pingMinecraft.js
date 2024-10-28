@@ -19,6 +19,7 @@ module.exports = {
                 }
 
                 if (previousServerState !== null && previousServerState !== serverState) {
+                    console.log(serverState ? 'Le serveur Minecraft est en ligne!' : 'Le serveur Minecraft est hors ligne!');
                     const message = serverState ? 'Le serveur Minecraft est en ligne!' : 'Le serveur Minecraft est hors ligne!';
                     channel.send(message);
                 }
