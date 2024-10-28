@@ -12,6 +12,8 @@ module.exports = {
 
         setInterval(() => {
             exec(`nc -vz ${process.env.SERVER_ID} 25565`, (error, stdout, stderr) => {
+                console.log(error)
+                console.log(stdout)
                 if (error) {
                     serverState = false;
                 } else {
