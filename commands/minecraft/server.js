@@ -17,6 +17,11 @@ module.exports = {
             name: "stop",
             description: "Stop the minecraft server remotely",
         },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: "status",
+            description: "Show the current status of the minecraft server",
+        },
     ],
     async execute(client, interaction) {
         if (interaction.options.getSubcommand() == "start") {
@@ -64,6 +69,17 @@ module.exports = {
                 });
             });
 
+        } else if (interaction.options.getSubcommand() == "ping" || interaction.options.getSubcommand() == "ping") {
+            await exec(`nc -vz ${process.env.SERVER_IP} 25565`, (error, _stdout, stderr) => {
+                if (error) {
+                    interaction.editReply("Le serveur est éteint !");
+                    return;
+                } else {
+                    interaction.editReply("Le serveur est allumé");
+                    return;
+                }
+            });
         }
+
     },
 };
