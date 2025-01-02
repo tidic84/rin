@@ -27,7 +27,6 @@ module.exports = {
                     return;
                 }
             });
-
             
             interaction.editReply("Server started !");
             wol(process.env.SERVER_MAC).then(() => {
@@ -35,12 +34,16 @@ module.exports = {
             })
         } else if (interaction.options.getSubcommand() == "stop") {
             await interaction.deferReply();
+            let answer = true;
             exec(`nc -vz ${process.env.SERVER_IP} 25565`, (error, stdout, stderr) => {
                 if (error) {
                     interaction.editReply("The server is already stopped !");
+                    answer = false;
                     return;
                 }
             });
+            if (!answer) return;
+
             const guildRoleId = "1324179015086641185";
             const guildRole = interaction.guild.roles.cache.get(guildRoleId);
             if (!interaction.member.roles.cache.has(guildRoleId)) {
