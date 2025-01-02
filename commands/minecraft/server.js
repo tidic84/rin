@@ -23,10 +23,10 @@ module.exports = {
             await interaction.deferReply();
             exec(`nc -vz ${process.env.SERVER_IP} 25565`, (error, stdout, stderr) => {
                 if (!error) {
-                    interaction.editReply("The server is already running !");
+                    interaction.editReply("Le serveur est déjà démarré !");
                     return;
                 }
-                interaction.editReply("Server started !");
+                interaction.editReply("Je démarre le serveur Minecraft !");
                 wol(process.env.SERVER_MAC).then(() => {
                     console.log('wol sent!')
                 })
@@ -36,14 +36,14 @@ module.exports = {
             await interaction.deferReply();
             await exec(`nc -vz ${process.env.SERVER_IP} 25565`, (error, _stdout, stderr) => {
                 if (error) {
-                    interaction.editReply("The server is already stopped !");
+                    interaction.editReply("Le serveur est déjà éteint !");
                     return;
                 }
 
                 const guildRoleId = "1324179015086641185";
                 const guildRole = interaction.guild.roles.cache.get(guildRoleId);
                 if (!interaction.member.roles.cache.has(guildRoleId)) {
-                    interaction.editReply("You don't have the permission to do that !");
+                    interaction.editReply("Vous n'avez pas la permission d'éteindre le serveur !");
                     return;
                 }
             
@@ -60,7 +60,7 @@ module.exports = {
                         interaction.editReply(`Une erreur est survenue: veuillez contacter un administrateur`);
                         return;
                     }
-                    interaction.editReply("Server stopped !");
+                    interaction.editReply("Je vais éteindre le serveur Minecraft !");
                 });
             });
 
