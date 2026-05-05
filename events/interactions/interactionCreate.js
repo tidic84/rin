@@ -91,12 +91,13 @@ module.exports = {
         } catch (error) {
             console.log(error);
 
-            if (interaction.deferred) return interaction.editReply({ content: `${error.message}` });
-
-            if (interaction.replied)
-                return interaction.followUp({ content: `${error.message}`, ephemeral: true });
-
-            return interaction.reply({ content: `${error.message}`, ephemeral: true });
+            try {
+                if (interaction.deferred) return await interaction.editReply({ content: `${error.message}` });
+                if (interaction.replied) return await interaction.followUp({ content: `${error.message}`, ephemeral: true });
+                return await interaction.reply({ content: `${error.message}`, ephemeral: true });
+            } catch (replyErr) {
+                console.error("[interactionCreate] Failed to send error reply:", replyErr.message);
+            }
         }
     },
 };

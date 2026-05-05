@@ -37,9 +37,21 @@ module.exports = {
         if (interaction.member.voice.deaf) return client.say.wrong(client, interaction, "You cannot run this command while deafened.");
         if (interaction.guild.members.me?.voice?.mute) return client.say.wrong(client, interaction, "Please unmute me before playing.");
 
+        await interaction.deferReply({ ephemeral: true }).catch(() => {});
+
+        console.log('[Play Command] Searching for:', query);
         const searchResult = await player
             .search(query, { requestedBy: interaction.user })
-            .catch(() => null);
+            .catch((error) => {
+                console.error('[Play Command] Search error:', error);
+                return null;
+            });
+
+        console.log('[Play Command] Search result:', {
+            hasResult: !!searchResult,
+            hasTracks: searchResult?.hasTracks(),
+            tracksCount: searchResult?.tracks?.length || 0
+        });
 
         if (!searchResult?.hasTracks())
             return client.say.wrong(client, interaction, `No track was found for ${query}!`);
@@ -48,11 +60,25 @@ module.exports = {
             await player.play(channel, searchResult, {
                 nodeOptions: {
                     metadata: interaction.channel,
-                },
+                    connectionTimeout: 60000,
+                    leaveOnEnd: false,
+                    leaveOnEmpty: true,
+                    leaveOnEmptyCooldown: 60000,
+                    bufferingTimeout: 3000,
+                    selfDeaf: true,
+                    disableBiquad: true,
+                    disableEqualizer: true,
+                    disableFilters: true,
+                    disableResampler: true,
+                    disableVolume: true,
+                    disableCompressor: true,
+                    disableReverb: true,
+                }
             });
-            return interaction.reply({ ephemeral: true, content: `Playing ${searchResult.tracks[0].title}` });
+            return interaction.editReply({ content: `Playing ${searchResult.tracks[0].title}` }).catch(() => {});
         } catch (e) {
-            console.log(e)
+            console.log('[Play Command] Error:', e.message);
+            console.log('[Play Command] Stack:', e.stack);
             return client.say.error(client, interaction, `Something went wrong: ${e.message}`);
         }
     },
